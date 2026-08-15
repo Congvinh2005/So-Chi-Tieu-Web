@@ -1,0 +1,13 @@
+# Local environment secrets
+.env
+.env.*
+!.env.example
+
+# Supabase local secrets - keep out of git
+supabase-config.js
+supabase-config.local.js
+
+# Common local files
+.DS_Store
+node_modules/
+*.log

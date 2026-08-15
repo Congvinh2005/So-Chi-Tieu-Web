@@ -1,0 +1,246 @@
+/* ==========================================================================
+   CHARTS & REPORTS STYLING
+   ========================================================================== */
+
+/* Donut Chart Container */
+.chart-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .chart-card-body {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+}
+
+.donut-chart-wrapper {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donut-center-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.donut-center-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.donut-center-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-top: 0.1rem;
+}
+
+/* Dynamic Chart Legend */
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.legend-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.legend-left {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.legend-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+
+.legend-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.legend-right {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.legend-amount {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.legend-percent {
+  font-size: 0.775rem;
+  color: var(--text-muted);
+  width: 36px;
+  text-align: right;
+}
+
+/* Report Controls & Toggles */
+.report-type-toggle {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-card-border);
+  padding: 0.25rem;
+  border-radius: var(--radius-md);
+}
+
+.toggle-btn {
+  padding: 0.45rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all var(--transition-fast);
+}
+
+.toggle-btn.active {
+  background: var(--accent-primary);
+  color: #ffffff;
+}
+
+.report-controls {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem 1.25rem;
+  align-items: center;
+}
+
+.control-field {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.input-control {
+  padding: 0.5rem 0.9rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+/* Summary Highlights Cards */
+.report-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .report-summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.report-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--bg-card-border);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+/* Bar Chart Canvas Container */
+.bar-chart-container {
+  width: 100%;
+  height: 320px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#reportBarCanvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Report Detailed Table */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.report-table th, .report-table td {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--bg-card-border);
+}
+
+.report-table th {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.report-table tr:hover td {
+  background: rgba(255, 255, 255, 0.02);
+}

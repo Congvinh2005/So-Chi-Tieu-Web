@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sổ Chi Tiêu Pro - Quản Lý Tài Chính Cá Nhân Thu Chi & Báo Cáo</title>
+  
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="Sổ Chi Tiêu Pro - Quản Lý Tài Chính Cá Nhân Thu Chi & Báo Cáo">
+  <meta name="description" content="Trang web quản lý chi tiêu cá nhân miễn phí, an toàn, giao diện hiện đại. Thêm sửa xoá giao dịch thu chi, báo cáo theo ngày và tháng, biểu đồ trực quan, hỗ trợ responsive di động.">
+  <meta name="keywords" content="sổ chi tiêu, quản lý chi tiêu, quản lý tài chính cá nhân, ghi chép thu chi, báo cáo tài chính, quản lý ngân sách">
+  <meta name="author" content="Sổ Chi Tiêu Pro">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://sochitieupro.app/">
+  <meta property="og:title" content="Sổ Chi Tiêu Pro - Quản Lý Tài Chính Cá Nhân Thu Chi & Báo Cáo">
+  <meta property="og:description" content="Ứng dụng sổ chi tiêu cá nhân thông minh. Quản lý thu chi hàng ngày, phân tích theo tháng, lọc tìm kiếm nhanh chóng và an toàn tuyệt đối trên trình duyệt.">
+  <meta property="og:image" content="https://sochitieupro.app/og-image.jpg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="Sổ Chi Tiêu Pro - Quản Lý Tài Chính Cá Nhân">
+  <meta property="twitter:description" content="Quản lý thu chi cá nhân hiệu quả, bảo mật và tiện lợi trên mọi thiết bị.">
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/navigation.css">
+  <link rel="stylesheet" href="css/charts.css">
+
+  <!-- JSON-LD Structured Data for SEO -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Sổ Chi Tiêu Pro",
+    "url": "https://sochitieupro.app",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires HTML5 and JavaScript support",
+    "description": "Ứng dụng web quản lý chi tiêu và tài chính cá nhân miễn phí với báo cáo ngày, tháng và tìm kiếm giao dịch.",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "VND"
+    }
+  }
+  </script>
+</head>
+<body data-theme="dark">
+
+  <!-- App Header / Navigation -->
+  <header class="app-header" id="mainHeader">
+    <div class="header-container">
+      <a href="#dashboard" class="brand-logo" id="brandLogoBtn" aria-label="Sổ Chi Tiêu Pro">
+        <div class="logo-icon">
+          <i class="fa-solid fa-wallet"></i>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">Sổ Chi Tiêu <span class="badge-pro">PRO</span></span>
+          <span class="brand-sub">Quản Lý Tài Chính Thông Minh</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="desktop-nav" aria-label="Điều hướng chính">
+        <button class="nav-btn active" data-tab="dashboard" id="desktopTabDashboard">
+          <i class="fa-solid fa-chart-pie"></i> Tổng Quan
+        </button>
+        <button class="nav-btn" data-tab="transactions" id="desktopTabTransactions">
+          <i class="fa-solid fa-list-check"></i> Giao Dịch
+        </button>
+        <button class="nav-btn" data-tab="reports" id="desktopTabReports">
+          <i class="fa-solid fa-chart-line"></i> Báo Cáo
+        </button>
+        <button class="nav-btn" data-tab="settings" id="desktopTabSettings">
+          <i class="fa-solid fa-sliders"></i> Dữ Liệu
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="authActionBtn">Đăng nhập</button>
+        <button class="btn-theme-toggle" id="themeToggleBtn" aria-label="Chuyển đổi giao diện sáng/tối" title="Đổi giao diện">
+          <i class="fa-solid fa-moon icon-dark"></i>
+          <i class="fa-solid fa-sun icon-light"></i>
+        </button>
+        <button class="btn btn-primary btn-add-header" id="headerAddTxBtn">
+          <i class="fa-solid fa-plus"></i> <span class="btn-text">Thêm Thu/Chi</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="main-content" id="mainContent">
+
+    <!-- TAB 1: DASHBOARD OVERVIEW -->
+    <section class="tab-panel active" id="tab-dashboard" aria-labelledby="desktopTabDashboard">
+      <div class="dashboard-hero">
+        <div class="welcome-text">
+          <h1 class="page-title">Tổng Quan Tài Chính</h1>
+          <p class="page-subtitle" id="currentDateSubtitle">Hôm nay: --</p>
+        </div>
+        <div class="quick-preset-bar">
+          <span class="preset-label">Nhập nhanh:</span>
+          <button class="preset-chip" data-category="Ăn uống" data-type="expense"><i class="fa-solid fa-utensils"></i> Ăn uống</button>
+          <button class="preset-chip" data-category="Di chuyển" data-type="expense"><i class="fa-solid fa-gas-pump"></i> Di chuyển</button>
+          <button class="preset-chip" data-category="Mua sắm" data-type="expense"><i class="fa-solid fa-bag-shopping"></i> Mua sắm</button>
+          <button class="preset-chip" data-category="Lương" data-type="income"><i class="fa-solid fa-hand-holding-dollar"></i> Nhận lương</button>
+        </div>
+      </div>
+
+      <!-- Financial Metric Cards Grid -->
+      <div class="metrics-grid">
+        <div class="metric-card card-balance">
+          <div class="card-icon"><i class="fa-solid fa-vault"></i></div>
+          <div class="card-info">
+            <span class="card-title">Số Dư Hiện Tại</span>
+            <div class="card-value" id="metricTotalBalance">0 ₫</div>
+            <span class="card-trend neutral" id="metricBalanceTrend"><i class="fa-solid fa-minus"></i> Cập nhật thời gian thực</span>
+          </div>
+        </div>
+
+        <div class="metric-card card-income">
+          <div class="card-icon"><i class="fa-solid fa-arrow-down-left"></i></div>
+          <div class="card-info">
+            <span class="card-title">Tổng Thu Nhập (Tháng này)</span>
+            <div class="card-value text-success" id="metricTotalIncome">0 ₫</div>
+            <span class="card-subtext" id="metricIncomeCount">0 khoản thu</span>
+          </div>
+        </div>
+
+        <div class="metric-card card-expense">
+          <div class="card-icon"><i class="fa-solid fa-arrow-up-right"></i></div>
+          <div class="card-info">
+            <span class="card-title">Tổng Chi Tiêu (Tháng này)</span>
+            <div class="card-value text-danger" id="metricTotalExpense">0 ₫</div>
+            <span class="card-subtext" id="metricExpenseCount">0 khoản chi</span>
+          </div>
+        </div>
+
+        <div class="metric-card card-savings">
+          <div class="card-icon"><i class="fa-solid fa-piggy-bank"></i></div>
+          <div class="card-info">
+            <span class="card-title">Tỷ Lệ Tiết Kiệm</span>
+            <div class="card-value" id="metricSavingsRate">0%</div>
+            <div class="progress-bar-container">
+              <div class="progress-bar-fill" id="metricSavingsProgress" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Charts & Recent Activity Row -->
+      <div class="dashboard-content-grid">
+        <!-- Category Breakdown Chart Card -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-chart-pie"></i> Cơ Cấu Chi Tiêu (Tháng này)</h3>
+            <button class="btn-text-only" id="viewFullReportBtn">Xem chi tiết <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body chart-card-body">
+            <div class="donut-chart-wrapper" id="dashDonutWrapper">
+              <!-- SVG Donut Chart rendered dynamically -->
+            </div>
+            <div class="chart-legend" id="dashChartLegend">
+              <!-- Dynamic Category Legend -->
+            </div>
+          </div>
+        </article>
+
+        <!-- Recent Transactions Card -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-clock-rotate-left"></i> Giao Dịch Gần Đây</h3>
+            <button class="btn-text-only" id="viewAllTxBtn">Xem tất cả <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+          <div class="card-body">
+            <div class="tx-list-container" id="dashRecentTxList">
+              <!-- Dynamic Recent Transactions rendered via JS -->
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- TAB 2: TRANSACTIONS (CRUD + SEARCH & FILTERS) -->
+    <section class="tab-panel" id="tab-transactions" aria-labelledby="desktopTabTransactions">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Danh Sách Giao Dịch</h2>
+          <p class="section-subtitle">Tìm kiếm, lọc và quản lý chỉnh sửa các khoản thu chi của bạn</p>
+        </div>
+        <button class="btn btn-primary" id="txAddBtn">
+          <i class="fa-solid fa-plus"></i> Thêm Giao Dịch Mới
+        </button>
+      </div>
+
+      <!-- Filter Controls Toolbar -->
+      <div class="filter-toolbar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass search-icon"></i>
+          <input type="text" id="searchInput" placeholder="Tìm theo ghi chú, danh mục, ví..." aria-label="Tìm kiếm giao dịch">
+          <button class="clear-search-btn hidden" id="clearSearchBtn" aria-label="Xoá từ khoá"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div class="filter-group">
+          <select id="filterType" class="filter-select" aria-label="Lọc theo loại">
+            <option value="all">Tất cả loại (Thu & Chi)</option>
+            <option value="expense">Khoản Chi Tiêu</option>
+            <option value="income">Khoản Thu Nhập</option>
+          </select>
+
+          <select id="filterCategory" class="filter-select" aria-label="Lọc theo danh mục">
+            <option value="all">Tất cả danh mục</option>
+            <!-- Dynamic Category Options -->
+          </select>
+
+          <select id="filterTime" class="filter-select" aria-label="Lọc theo thời gian">
+            <option value="this_month">Tháng này</option>
+            <option value="today">Hôm nay</option>
+            <option value="this_week">Tuần này</option>
+            <option value="last_month">Tháng trước</option>
+            <option value="all">Tất cả thời gian</option>
+          </select>
+
+          <select id="sortOrder" class="filter-select" aria-label="Sắp xếp">
+            <option value="date_desc">Mới nhất trước</option>
+            <option value="date_asc">Cũ nhất trước</option>
+            <option value="amount_desc">Số tiền lớn nhất</option>
+            <option value="amount_asc">Số tiền nhỏ nhất</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter Summary Bar -->
+      <div class="filter-summary-bar" id="filterSummaryBar">
+        <span>Tìm thấy <strong id="matchingCount">0</strong> giao dịch</span>
+        <span class="summary-totals">
+          Tổn thu: <span class="text-success" id="summaryIncome">0 ₫</span> | 
+          Tổng chi: <span class="text-danger" id="summaryExpense">0 ₫</span>
+        </span>
+      </div>
+
+      <!-- Main Transactions List Container -->
+      <div class="tx-main-list" id="txMainList">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+
+    <!-- TAB 3: REPORTS & ANALYTICS -->
+    <section class="tab-panel" id="tab-reports" aria-labelledby="desktopTabReports">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Báo Cáo & Thống Kê Tài Chính</h2>
+          <p class="section-subtitle">Phân tích chi tiết thu chi theo Ngày, Tháng và Danh Mục</p>
+        </div>
+        <div class="report-type-toggle">
+          <button class="toggle-btn active" id="reportTabDaily" data-report-mode="daily"><i class="fa-solid fa-calendar-day"></i> Theo Ngày</button>
+          <button class="toggle-btn" id="reportTabMonthly" data-report-mode="monthly"><i class="fa-solid fa-calendar-days"></i> Theo Tháng</button>
+        </div>
+      </div>
+
+      <!-- Reports Controls -->
+      <div class="report-controls">
+        <div class="control-field" id="reportMonthPickerWrapper">
+          <label for="reportMonthPicker">Chọn tháng báo cáo:</label>
+          <input type="month" id="reportMonthPicker" class="input-control">
+        </div>
+        <div class="control-field hidden" id="reportYearPickerWrapper">
+          <label for="reportYearPicker">Chọn năm báo cáo:</label>
+          <select id="reportYearPicker" class="filter-select"></select>
+        </div>
+      </div>
+
+      <!-- Report Summary Highlights -->
+      <div class="report-summary-cards">
+        <div class="report-stat-card">
+          <span class="stat-label" id="repStat1Label">Tổng Chi Tiêu Trong Kỳ</span>
+          <span class="stat-value text-danger" id="repStat1Value">0 ₫</span>
+        </div>
+        <div class="report-stat-card">
+          <span class="stat-label" id="repStat2Label">Trung Bình Chi Hàng Ngày</span>
+          <span class="stat-value" id="repStat2Value">0 ₫</span>
+        </div>
+        <div class="report-stat-card">
+          <span class="stat-label" id="repStat3Label">Ngày Chi Tiêu Nhiều Nhất</span>
+          <span class="stat-value text-warning" id="repStat3Value">--</span>
+        </div>
+      </div>
+
+      <!-- Report Visual Charts Section -->
+      <div class="reports-grid">
+        <!-- Trend Bar Chart -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3 id="barChartTitle"><i class="fa-solid fa-chart-column"></i> Biểu Đồ Thu Chi Theo Ngày</h3>
+          </div>
+          <div class="card-body">
+            <div class="bar-chart-container" id="barChartContainer">
+              <canvas id="reportBarCanvas" width="800" height="350"></canvas>
+            </div>
+          </div>
+        </article>
+
+        <!-- Category Pie/Donut Breakdown -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-pie-chart"></i> Tỷ Trọng Phân Loại Chi Tiêu</h3>
+          </div>
+          <div class="card-body">
+            <div class="donut-chart-wrapper" id="reportDonutWrapper">
+              <!-- SVG Donut Chart rendered dynamically -->
+            </div>
+            <div class="chart-legend" id="reportChartLegend">
+              <!-- Dynamic Legend -->
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- Detailed Breakdown Table -->
+      <article class="content-card margin-top-lg">
+        <div class="card-header">
+          <h3 id="tableReportTitle"><i class="fa-solid fa-table-list"></i> Bảng Chi Tiết Biến Động Hàng Ngày</h3>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="report-table" id="reportTable">
+            <thead>
+              <tr>
+                <th id="thPeriodCol">Mốc Thời Gian</th>
+                <th class="text-right">Tổng Thu (+</th>
+                <th class="text-right">Tổng Chi (-)</th>
+                <th class="text-right">Chênh lệch / Dư</th>
+                <th class="text-center">Chi tiết</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+
+    <!-- TAB 4: DATA & SETTINGS -->
+    <section class="tab-panel" id="tab-settings" aria-labelledby="desktopTabSettings">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Quản Lý Dữ Liệu & Cài Đặt</h2>
+          <p class="section-subtitle">Sao lưu, phục hồi dữ liệu và tuỳ chỉnh cài đặt cá nhân</p>
+        </div>
+      </div>
+
+      <div class="settings-grid">
+        <!-- Sample Data Generator Card -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Nạp Dữ Liệu Mẫu Thử Nghiệm</h3>
+          </div>
+          <div class="card-body">
+            <p class="card-desc">Nạp nhanh bộ dữ liệu thu chi mẫu phong phú để trải nghiệm ngay các tính năng báo cáo và biểu đồ.</p>
+            <button class="btn btn-secondary" id="loadSampleDataBtn">
+              <i class="fa-solid fa-database"></i> Nạp 15+ Giao Dịch Mẫu
+            </button>
+          </div>
+        </article>
+
+        <!-- Backup & Export Data Card -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-file-export"></i> Xuất & Sao Lưu Dữ Liệu</h3>
+          </div>
+          <div class="card-body">
+            <p class="card-desc">Tải dữ liệu thu chi về máy của bạn dưới dạng file CSV Excel hoặc JSON để sao lưu an toàn.</p>
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="exportCsvBtn">
+                <i class="fa-solid fa-file-csv"></i> Xuất File CSV (Excel)
+              </button>
+              <button class="btn btn-secondary" id="exportJsonBtn">
+                <i class="fa-solid fa-code"></i> Xuất File JSON Backup
+              </button>
+            </div>
+          </div>
+        </article>
+
+        <!-- Import Data Card -->
+        <article class="content-card">
+          <div class="card-header">
+            <h3><i class="fa-solid fa-file-import"></i> Phục Hồi / Nhập Dữ Liệu</h3>
+          </div>
+          <div class="card-body">
+            <p class="card-desc">Nhập lại tệp tin JSON đã sao lưu trước đó để khôi phục danh sách giao dịch.</p>
+            <input type="file" id="importJsonInput" accept=".json" class="hidden">
+            <button class="btn btn-secondary" id="triggerImportBtn">
+              <i class="fa-solid fa-upload"></i> Chọn Tệp JSON Để Khôi Phục
+            </button>
+          </div>
+        </article>
+
+        <!-- Clear Data Danger Zone -->
+        <article class="content-card border-danger">
+          <div class="card-header text-danger">
+            <h3><i class="fa-solid fa-triangle-exclamation"></i> Vùng Nguy Hiểm</h3>
+          </div>
+          <div class="card-body">
+            <p class="card-desc">Xoá toàn bộ giao dịch hiện có khỏi bộ nhớ trình duyệt `localStorage`. Hành động này không thể hoàn tác!</p>
+            <button class="btn btn-danger" id="clearAllDataBtn">
+              <i class="fa-solid fa-trash-can"></i> Xoá Toàn Bộ Dữ Liệu
+            </button>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="mobile-bottom-nav" aria-label="Điều hướng di động">
+    <button class="mobile-nav-item active" data-tab="dashboard" id="mobileTabDashboard">
+      <i class="fa-solid fa-chart-pie"></i>
+      <span>Tổng quan</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="transactions" id="mobileTabTransactions">
+      <i class="fa-solid fa-list-check"></i>
+      <span>Giao dịch</span>
+    </button>
+    
+    <!-- Floating Add Button for Mobile -->
+    <button class="mobile-fab-btn" id="mobileFabBtn" aria-label="Thêm thu chi mới">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+
+    <button class="mobile-nav-item" data-tab="reports" id="mobileTabReports">
+      <i class="fa-solid fa-chart-line"></i>
+      <span>Báo cáo</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="settings" id="mobileTabSettings">
+      <i class="fa-solid fa-sliders"></i>
+      <span>Dữ liệu</span>
+    </button>
+  </nav>
+
+  <!-- MODAL: ADD / EDIT TRANSACTION -->
+  <div class="modal-backdrop hidden" id="txModal" role="dialog" aria-modal="true" aria-labelledby="modalTxTitle">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalTxTitle"><i class="fa-solid fa-pen-to-square"></i> Thêm Giao Dịch Mới</h3>
+        <button class="modal-close-btn" id="modalTxCloseBtn" aria-label="Đóng modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <form id="txForm" class="modal-body">
+        <input type="hidden" id="txFormId" value="">
+
+        <!-- Transaction Type Switcher -->
+        <div class="type-selector-group">
+          <label class="type-option active-expense" id="typeExpenseLabel">
+            <input type="radio" name="txType" value="expense" id="txTypeExpense" checked>
+            <i class="fa-solid fa-circle-minus"></i> Chi Tiêu (-)
+          </label>
+          <label class="type-option" id="typeIncomeLabel">
+            <input type="radio" name="txType" value="income" id="txTypeIncome">
+            <i class="fa-solid fa-circle-plus"></i> Thu Nhập (+)
+          </label>
+        </div>
+
+        <!-- Amount Input -->
+        <div class="form-group margin-top-md">
+          <label for="txAmount" class="form-label">Số Tiền (VNĐ) <span class="required">*</span></label>
+          <div class="amount-input-wrapper">
+            <input type="number" id="txAmount" class="form-control input-amount" placeholder="0" min="1000" step="1000" required>
+            <span class="currency-badge">₫</span>
+          </div>
+          <div class="amount-preview" id="amountPreview">0 VNĐ</div>
+        </div>
+
+        <!-- Form Row: Category & Date -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="txCategory" class="form-label">Danh Mục <span class="required">*</span></label>
+            <select id="txCategory" class="form-control" required>
+              <!-- Populated dynamically via JS -->
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="txDate" class="form-label">Ngày Giao Dịch <span class="required">*</span></label>
+            <input type="date" id="txDate" class="form-control" required>
+          </div>
+        </div>
+
+        <!-- Form Row: Payment Method & Note -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="txPayment" class="form-label">Hình Thức Thanh Toán</label>
+            <select id="txPayment" class="form-control">
+              <option value="Tiền mặt">💵 Tiền mặt</option>
+              <option value="Chuyển khoản">🏦 Chuyển khoản (Ngân hàng)</option>
+              <option value="Ví điện tử">📱 Ví điện tử (Momo/ZaloPay)</option>
+              <option value="Thẻ tín dụng">💳 Thẻ tín dụng</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="txNote" class="form-label">Ghi Chú Chi Tiết</label>
+            <input type="text" id="txNote" class="form-control" placeholder="Ví dụ: Ăn trưa bún bò, mua sách, lương T8..." maxlength="100">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modalTxCancelBtn">Hủy Bỏ</button>
+          <button type="submit" class="btn btn-primary" id="modalTxSubmitBtn"><i class="fa-solid fa-floppy-disk"></i> Lưu Giao Dịch</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIRM DELETE -->
+  <div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title text-danger"><i class="fa-solid fa-triangle-exclamation"></i> Xác Nhận Xóa</h3>
+        <button class="modal-close-btn" id="confirmModalCloseBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalMessage">Bạn có chắc chắn muốn xóa giao dịch này?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="confirmModalCancelBtn">Hủy</button>
+        <button type="button" class="btn btn-danger" id="confirmModalOkBtn">Xóa Vĩnh Viễn</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: AUTH -->
+  <div class="modal-backdrop hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="authModalTitle"><i class="fa-solid fa-right-to-bracket"></i> Đăng nhập</h3>
+        <button class="modal-close-btn" id="authModalCloseBtn" aria-label="Đóng modal đăng nhập"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="authForm" class="modal-body">
+        <div class="form-group hidden" id="authNameGroup">
+          <label for="authFullName" class="form-label">Họ và tên</label>
+          <input type="text" id="authFullName" class="form-control" placeholder="Nhập họ tên của bạn">
+        </div>
+
+        <div class="form-group">
+          <label for="authEmail" class="form-label">Email</label>
+          <input type="email" id="authEmail" class="form-control" placeholder="you@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="authPassword" class="form-label">Mật khẩu</label>
+          <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="authModeToggleBtn">Tạo tài khoản</button>
+          <button type="submit" class="btn btn-primary" id="authSubmitBtn">Đăng nhập</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
