@@ -8,8 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // DOM Elements References
   const mainHeader = document.getElementById('mainHeader');
+  const mainContent = document.getElementById('mainContent');
   const currentDateSubtitle = document.getElementById('currentDateSubtitle');
   const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const guestStateView = document.getElementById('guestStateView');
+  const guestLoginBtn = document.getElementById('guestLoginBtn');
+  const guestRegisterBtn = document.getElementById('guestRegisterBtn');
 
   // Navigation Links
   const navButtons = document.querySelectorAll('.nav-btn, .mobile-nav-item');
@@ -63,6 +67,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const authFullName = document.getElementById('authFullName');
   const authEmail = document.getElementById('authEmail');
   const authPassword = document.getElementById('authPassword');
+
+  const accountModal = document.getElementById('accountModal');
+  const accountModalCloseBtn = document.getElementById('accountModalCloseBtn');
+  const accountForm = document.getElementById('accountForm');
+  const accountModalCancelBtn = document.getElementById('accountModalCancelBtn');
+  const accountEmail = document.getElementById('accountEmail');
+  const accountFullName = document.getElementById('accountFullName');
+  const accountPassword = document.getElementById('accountPassword');
+  const accountConfirmPassword = document.getElementById('accountConfirmPassword');
   const amountPreview = document.getElementById('amountPreview');
   const radioExpense = document.getElementById('txTypeExpense');
   const radioIncome = document.getElementById('txTypeIncome');
@@ -183,10 +196,73 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleUserMenu(false);
   }
 
+  function setGuestState(isGuest) {
+    if (mainContent) {
+      mainContent.classList.toggle('guest-mode', isGuest);
+    }
+
+    if (guestStateView) {
+      guestStateView.classList.toggle('hidden', !isGuest);
+    }
+  }
+
+  async function openAccountModal() {
+    const supabase = window.appSupabase;
+    if (!supabase || !supabase.isReady()) {
+      ui.showToast('Supabase chưa được cấu hình. Vui lòng cập nhật supabase-config.js.', 'danger');
+      return;
+    }
+
+    const session = await supabase.getSession();
+    if (!session) {
+      ui.showToast('Bạn chưa đăng nhập để xem thông tin tài khoản.', 'danger');
+      return;
+    }
+
+    const user = session.user;
+    if (accountEmail) {
+      accountEmail.value = user.email || '';
+    }
+
+    if (accountFullName) {
+      accountFullName.value = user.user_metadata?.full_name || user.user_metadata?.name || '';
+    }
+
+    if (accountPassword) accountPassword.value = '';
+    if (accountConfirmPassword) accountConfirmPassword.value = '';
+
+    if (accountModal) {
+      accountModal.classList.remove('hidden');
+    }
+  }
+
+  async function ensureAuthenticated() {
+    const supabase = window.appSupabase;
+    if (!supabase || !supabase.isReady()) {
+      ui.showToast('Supabase chưa được cấu hình. Vui lòng cập nhật supabase-config.js.', 'danger');
+      return false;
+    }
+
+    const session = await supabase.getSession();
+    if (!session) {
+      authMode = 'login';
+      updateAuthUi();
+      if (authModal) {
+        authModal.classList.remove('hidden');
+      }
+      setGuestState(true);
+      ui.showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.', 'danger');
+      return false;
+    }
+
+    return true;
+  }
+
   async function syncUserData() {
     const supabase = window.appSupabase;
     if (!supabase || !supabase.isReady()) {
       updateUserProfileUI(null);
+      setGuestState(true);
       return;
     }
 
@@ -195,9 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
     closeUserMenu();
 
     if (!session) {
+      store.resetToGuestState();
+      authMode = 'login';
+      updateAuthUi();
+      setGuestState(true);
       return;
     }
 
+    setGuestState(false);
     await store.initFromSupabase();
   }
 
@@ -226,10 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAll();
     });
 
-    renderAll();
     updateAuthUi();
     setupEventListeners();
-    syncUserData();
+    syncUserData().then(() => {
+      renderAll();
+    });
   }
 
   function updateCurrentDateDisplay() {
@@ -303,10 +385,18 @@ document.addEventListener('DOMContentLoaded', () => {
       recent.forEach(tx => {
         const itemNode = ui.createTransactionItemNode(
           tx,
-          (t) => ui.openTxModal(t),
-          (id) => ui.openConfirmModal(id, 'Xác nhận xóa giao dịch này?', (delId) => {
-            store.deleteTransaction(delId);
-            ui.showToast('Đã xóa giao dịch thành công', 'success');
+          async (t) => {
+            if (!(await ensureAuthenticated())) return;
+            ui.openTxModal(t);
+          },
+          (id) => ui.openConfirmModal(id, 'Xác nhận xóa giao dịch này?', async (delId) => {
+            if (!(await ensureAuthenticated())) return;
+            const success = await store.deleteTransaction(delId);
+            if (success) {
+              ui.showToast('Đã xóa giao dịch thành công', 'success');
+            } else {
+              ui.showToast('Không thể xóa giao dịch. Vui lòng đăng nhập lại.', 'danger');
+            }
           })
         );
         dashRecentTxList.appendChild(itemNode);
@@ -473,10 +563,18 @@ document.addEventListener('DOMContentLoaded', () => {
       grouped[dateStr].forEach(tx => {
         const itemNode = ui.createTransactionItemNode(
           tx,
-          (t) => ui.openTxModal(t),
-          (id) => ui.openConfirmModal(id, 'Bạn chắc chắn muốn xoá giao dịch này?', (delId) => {
-            store.deleteTransaction(delId);
-            ui.showToast('Đã xóa giao dịch thành công', 'success');
+          async (t) => {
+            if (!(await ensureAuthenticated())) return;
+            ui.openTxModal(t);
+          },
+          (id) => ui.openConfirmModal(id, 'Bạn chắc chắn muốn xoá giao dịch này?', async (delId) => {
+            if (!(await ensureAuthenticated())) return;
+            const success = await store.deleteTransaction(delId);
+            if (success) {
+              ui.showToast('Đã xóa giao dịch thành công', 'success');
+            } else {
+              ui.showToast('Không thể xóa giao dịch. Vui lòng đăng nhập lại.', 'danger');
+            }
           })
         );
         groupBody.appendChild(itemNode);
@@ -707,9 +805,26 @@ document.addEventListener('DOMContentLoaded', () => {
     if (viewAllTxBtn) viewAllTxBtn.addEventListener('click', () => switchTab('transactions'));
 
     // Open Modal Triggers
-    if (headerAddTxBtn) headerAddTxBtn.addEventListener('click', () => ui.openTxModal());
-    if (txAddBtn) txAddBtn.addEventListener('click', () => ui.openTxModal());
-    if (mobileFabBtn) mobileFabBtn.addEventListener('click', () => ui.openTxModal());
+    if (headerAddTxBtn) {
+      headerAddTxBtn.addEventListener('click', async () => {
+        if (!(await ensureAuthenticated())) return;
+        ui.openTxModal();
+      });
+    }
+
+    if (txAddBtn) {
+      txAddBtn.addEventListener('click', async () => {
+        if (!(await ensureAuthenticated())) return;
+        ui.openTxModal();
+      });
+    }
+
+    if (mobileFabBtn) {
+      mobileFabBtn.addEventListener('click', async () => {
+        if (!(await ensureAuthenticated())) return;
+        ui.openTxModal();
+      });
+    }
 
     if (authActionBtn) {
       authActionBtn.addEventListener('click', async () => {
@@ -730,6 +845,26 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
+    if (guestLoginBtn) {
+      guestLoginBtn.addEventListener('click', () => {
+        authMode = 'login';
+        updateAuthUi();
+        if (authModal) {
+          authModal.classList.remove('hidden');
+        }
+      });
+    }
+
+    if (guestRegisterBtn) {
+      guestRegisterBtn.addEventListener('click', () => {
+        authMode = 'signup';
+        updateAuthUi();
+        if (authModal) {
+          authModal.classList.remove('hidden');
+        }
+      });
+    }
+
     if (userProfileChip) {
       userProfileChip.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -743,7 +878,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeUserMenu();
 
         if (action === 'account') {
-          ui.showToast('Thông tin tài khoản đang được cập nhật.', 'success');
+          await openAccountModal();
           return;
         }
 
@@ -758,8 +893,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const session = await supabase.getSession();
             if (session) {
               await supabase.signOut();
+              store.resetToGuestState();
               updateUserProfileUI(null);
+              setGuestState(true);
               ui.showToast('Bạn đã đăng xuất.', 'success');
+              renderAll();
               return;
             }
           }
@@ -776,6 +914,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', () => authModal.classList.add('hidden'));
+
+    if (accountModalCloseBtn) accountModalCloseBtn.addEventListener('click', () => accountModal.classList.add('hidden'));
+    if (accountModalCancelBtn) accountModalCancelBtn.addEventListener('click', () => accountModal.classList.add('hidden'));
+
+    if (accountForm) {
+      accountForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const supabase = window.appSupabase;
+        if (!supabase || !supabase.isReady()) {
+          ui.showToast('Supabase chưa được cấu hình. Vui lòng cập nhật supabase-config.js.', 'danger');
+          return;
+        }
+
+        const session = await supabase.getSession();
+        if (!session) {
+          ui.showToast('Bạn chưa đăng nhập để cập nhật tài khoản.', 'danger');
+          return;
+        }
+
+        const fullName = accountFullName ? accountFullName.value.trim() : '';
+        const newPassword = accountPassword ? accountPassword.value.trim() : '';
+        const confirmPassword = accountConfirmPassword ? accountConfirmPassword.value.trim() : '';
+
+        if (newPassword && newPassword.length < 6) {
+          ui.showToast('Mật khẩu mới phải có ít nhất 6 ký tự.', 'danger');
+          return;
+        }
+
+        if (newPassword && newPassword !== confirmPassword) {
+          ui.showToast('Xác nhận mật khẩu không khớp.', 'danger');
+          return;
+        }
+
+        if (fullName) {
+          const { error: profileError } = await supabase.updateProfile({ full_name: fullName });
+          if (profileError) {
+            ui.showToast(profileError.message || 'Cập nhật họ tên thất bại.', 'danger');
+            return;
+          }
+        }
+
+        if (newPassword) {
+          const { error: passwordError } = await supabase.updatePassword(newPassword);
+          if (passwordError) {
+            ui.showToast(passwordError.message || 'Đổi mật khẩu thất bại.', 'danger');
+            return;
+          }
+        }
+
+        ui.showToast('Thông tin tài khoản đã được cập nhật.', 'success');
+        accountPassword.value = '';
+        accountConfirmPassword.value = '';
+        accountModal.classList.add('hidden');
+        await syncUserData();
+      });
+    }
 
     if (authModeToggleBtn) {
       authModeToggleBtn.addEventListener('click', () => {
@@ -831,7 +1025,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Preset Chips
     document.querySelectorAll('.preset-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
+      chip.addEventListener('click', async () => {
+        if (!(await ensureAuthenticated())) return;
         const cat = chip.dataset.category;
         const type = chip.dataset.type;
         ui.openTxModal(null, cat, type);
@@ -871,8 +1066,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Transaction Form Submit (Save / Update)
     if (txForm) {
-      txForm.addEventListener('submit', (e) => {
+      txForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (!(await ensureAuthenticated())) {
+          ui.closeTxModal();
+          return;
+        }
+
         const id = document.getElementById('txFormId').value;
         const amount = document.getElementById('txAmount').value;
         const category = document.getElementById('txCategory').value;
@@ -882,13 +1082,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const type = document.querySelector('input[name="txType"]:checked').value;
 
         if (id) {
-          // Update
-          store.updateTransaction(id, { type, amount, category, date, payment, note });
-          ui.showToast('Cập nhật giao dịch thành công!', 'success');
+          const success = await store.updateTransaction(id, { type, amount, category, date, payment, note });
+          if (success) {
+            ui.showToast('Cập nhật giao dịch thành công!', 'success');
+          } else {
+            ui.showToast('Không thể cập nhật giao dịch. Vui lòng đăng nhập lại.', 'danger');
+          }
         } else {
-          // Add
-          store.addTransaction({ type, amount, category, date, payment, note });
-          ui.showToast('Đã thêm giao dịch mới!', 'success');
+          const success = await store.addTransaction({ type, amount, category, date, payment, note });
+          if (success) {
+            ui.showToast('Đã thêm giao dịch mới!', 'success');
+          } else {
+            ui.showToast('Không thể thêm giao dịch. Vui lòng đăng nhập lại.', 'danger');
+          }
         }
 
         ui.closeTxModal();

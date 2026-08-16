@@ -123,6 +123,17 @@
 
   <!-- Main Content Area -->
   <main class="main-content" id="mainContent">
+    <div class="guest-state hidden" id="guestStateView" aria-live="polite">
+      <div class="guest-state-card">
+        <div class="guest-state-icon"><i class="fa-solid fa-right-to-bracket"></i></div>
+        <h2>Bạn chưa đăng nhập</h2>
+        <p>Vui lòng đăng nhập để xem dữ liệu chi tiêu và sử dụng các chức năng của ứng dụng.</p>
+        <div class="guest-action-group">
+          <button type="button" class="btn btn-primary" id="guestLoginBtn">Đăng nhập ngay</button>
+          <button type="button" class="btn btn-secondary" id="guestRegisterBtn">Tạo tài khoản mới</button>
+        </div>
+      </div>
+    </div>
 
     <!-- TAB 1: DASHBOARD OVERVIEW -->
     <section class="tab-panel active" id="tab-dashboard" aria-labelledby="desktopTabDashboard">
@@ -497,7 +508,7 @@
         <div class="form-group margin-top-md">
           <label for="txAmount" class="form-label">Số Tiền (VNĐ) <span class="required">*</span></label>
           <div class="amount-input-wrapper">
-            <input type="number" id="txAmount" class="form-control input-amount" placeholder="0" min="1000" step="1000" required>
+            <input type="number" id="txAmount" class="form-control input-amount" placeholder="0" min="1" step="1" inputmode="numeric" required>
             <span class="currency-badge">₫</span>
           </div>
           <div class="amount-preview" id="amountPreview">0 VNĐ</div>
@@ -558,6 +569,43 @@
         <button type="button" class="btn btn-secondary" id="confirmModalCancelBtn">Hủy</button>
         <button type="button" class="btn btn-danger" id="confirmModalOkBtn">Xóa Vĩnh Viễn</button>
       </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ACCOUNT SETTINGS -->
+  <div class="modal-backdrop hidden" id="accountModal" role="dialog" aria-modal="true" aria-labelledby="accountModalTitle">
+    <div class="modal-container modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="accountModalTitle"><i class="fa-solid fa-user-circle"></i> Thông tin tài khoản</h3>
+        <button class="modal-close-btn" id="accountModalCloseBtn" aria-label="Đóng thông tin tài khoản"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="accountForm" class="modal-body">
+        <div class="form-group">
+          <label for="accountEmail" class="form-label">Email</label>
+          <input type="email" id="accountEmail" class="form-control" disabled>
+        </div>
+
+        <div class="form-group">
+          <label for="accountFullName" class="form-label">Họ và tên</label>
+          <input type="text" id="accountFullName" class="form-control" placeholder="Nhập họ tên của bạn">
+        </div>
+
+        <div class="form-group">
+          <label for="accountPassword" class="form-label">Mật khẩu mới</label>
+          <input type="password" id="accountPassword" class="form-control" placeholder="Để trống nếu không đổi mật khẩu">
+        </div>
+
+        <div class="form-group">
+          <label for="accountConfirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+          <input type="password" id="accountConfirmPassword" class="form-control" placeholder="Nhập lại mật khẩu mới">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="accountModalCancelBtn">Hủy</button>
+          <button type="submit" class="btn btn-primary" id="accountSubmitBtn"><i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi</button>
+        </div>
+      </form>
     </div>
   </div>
 

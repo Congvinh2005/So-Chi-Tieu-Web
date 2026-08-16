@@ -60,6 +60,30 @@
       return this.client.auth.signOut();
     }
 
+    async getCurrentUser() {
+      if (!this.client) return null;
+      const { data, error } = await this.client.auth.getUser();
+      if (error) {
+        console.error('Supabase getCurrentUser error:', error);
+        return null;
+      }
+      return data.user;
+    }
+
+    async updateProfile({ full_name }) {
+      if (!this.client) return { data: null, error: new Error('Supabase chưa được cấu hình.') };
+      return this.client.auth.updateUser({
+        data: {
+          full_name: full_name || ''
+        }
+      });
+    }
+
+    async updatePassword(password) {
+      if (!this.client) return { data: null, error: new Error('Supabase chưa được cấu hình.') };
+      return this.client.auth.updateUser({ password });
+    }
+
     async listTransactions() {
       if (!this.client) return [];
 

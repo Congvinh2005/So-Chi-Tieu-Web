@@ -82,6 +82,16 @@ class Store {
   }
 
   async addTransaction(txData) {
+    const supabase = window.appSupabase;
+    if (!supabase || !supabase.isReady()) {
+      return null;
+    }
+
+    const session = await supabase.getSession();
+    if (!session) {
+      return null;
+    }
+
     const newTx = {
       id: generateId(),
       type: txData.type || 'expense',
@@ -92,74 +102,58 @@ class Store {
       note: txData.note || ''
     };
 
-    const supabase = window.appSupabase;
-    if (supabase && supabase.isReady()) {
-      const session = await supabase.getSession();
-      if (session) {
-        const { data, error } = await supabase.addTransaction(newTx);
-        if (!error && data && data[0]) {
-          this.transactions = [
-            { ...data[0], id: data[0].id || newTx.id },
-            ...this.transactions.filter(item => item.id !== newTx.id)
-          ];
-          this.saveToStorage();
-          return data[0];
-        }
-      }
+    const { data, error } = await supabase.addTransaction(newTx);
+    if (!error && data && data[0]) {
+      this.transactions = [
+        { ...data[0], id: data[0].id || newTx.id },
+        ...this.transactions.filter(item => item.id !== newTx.id)
+      ];
+      this.saveToStorage();
+      return data[0];
     }
 
-    this.transactions.unshift(newTx);
-    this.saveToStorage();
-    return newTx;
+    return null;
   }
 
   async updateTransaction(id, updatedFields) {
     const supabase = window.appSupabase;
-    if (supabase && supabase.isReady()) {
-      const session = await supabase.getSession();
-      if (session) {
-        const { data, error } = await supabase.updateTransaction(id, updatedFields);
-        if (!error && data && data[0]) {
-          this.transactions = this.transactions.map(tx => tx.id === id ? { ...tx, ...data[0] } : tx);
-          this.saveToStorage();
-          return true;
-        }
-      }
+    if (!supabase || !supabase.isReady()) {
+      return false;
     }
 
-    const index = this.transactions.findIndex(t => t.id === id);
-    if (index !== -1) {
-      this.transactions[index] = {
-        ...this.transactions[index],
-        ...updatedFields,
-        amount: Math.abs(Number(updatedFields.amount)) || this.transactions[index].amount
-      };
+    const session = await supabase.getSession();
+    if (!session) {
+      return false;
+    }
+
+    const { data, error } = await supabase.updateTransaction(id, updatedFields);
+    if (!error && data && data[0]) {
+      this.transactions = this.transactions.map(tx => tx.id === id ? { ...tx, ...data[0] } : tx);
       this.saveToStorage();
       return true;
     }
+
     return false;
   }
 
   async deleteTransaction(id) {
     const supabase = window.appSupabase;
-    if (supabase && supabase.isReady()) {
-      const session = await supabase.getSession();
-      if (session) {
-        const { error } = await supabase.deleteTransaction(id);
-        if (!error) {
-          this.transactions = this.transactions.filter(t => t.id !== id);
-          this.saveToStorage();
-          return true;
-        }
-      }
+    if (!supabase || !supabase.isReady()) {
+      return false;
     }
 
-    const initialLen = this.transactions.length;
-    this.transactions = this.transactions.filter(t => t.id !== id);
-    if (this.transactions.length !== initialLen) {
+    const session = await supabase.getSession();
+    if (!session) {
+      return false;
+    }
+
+    const { error } = await supabase.deleteTransaction(id);
+    if (!error) {
+      this.transactions = this.transactions.filter(t => t.id !== id);
       this.saveToStorage();
       return true;
     }
+
     return false;
   }
 
@@ -171,6 +165,16 @@ class Store {
   clearAllData() {
     this.transactions = [];
     this.saveToStorage();
+  }
+
+  resetToGuestState() {
+    this.transactions = [];
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    } catch (e) {
+      console.error('Error clearing guest state:', e);
+    }
+    this.notify();
   }
 
   importData(dataArray) {
