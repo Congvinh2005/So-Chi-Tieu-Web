@@ -34,14 +34,10 @@ class Store {
     if (!session) return false;
 
     const remoteTxs = await supabase.listTransactions();
-    if (remoteTxs && remoteTxs.length > 0) {
-      this.transactions = remoteTxs;
-      this.saveToStorage();
-      this.notify();
-      return true;
-    }
-
-    return false;
+    this.transactions = Array.isArray(remoteTxs) ? remoteTxs : [];
+    this.saveToStorage();
+    this.notify();
+    return true;
   }
 
   loadFromStorage() {
