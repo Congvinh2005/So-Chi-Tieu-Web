@@ -138,17 +138,30 @@
     async updateTransaction(id, fields) {
       if (!this.client) return { data: null, error: new Error('Supabase chưa được cấu hình.') };
 
+      const { data: sessionData } = await this.client.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (!user) {
+        return { data: null, error: new Error('Người dùng chưa đăng nhập.') };
+      }
+
       const payload = {
         ...fields,
         amount: fields.amount !== undefined ? Math.abs(Number(fields.amount || 0)) : undefined
       };
 
-      return this.client.from('transactions').update(payload).eq('id', id).select();
+      return this.client.from('transactions').update(payload).eq('id', id).eq('user_id', user.id).select();
     }
 
     async deleteTransaction(id) {
       if (!this.client) return { data: null, error: new Error('Supabase chưa được cấu hình.') };
-      return this.client.from('transactions').delete().eq('id', id);
+
+      const { data: sessionData } = await this.client.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (!user) {
+        return { error: new Error('Người dùng chưa đăng nhập.') };
+      }
+
+      return this.client.from('transactions').delete().eq('id', id).eq('user_id', user.id);
     }
 
     async clearAllTransactions() {
