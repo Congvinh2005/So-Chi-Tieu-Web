@@ -1,0 +1,7 @@
+{
+  "name": "so-chi-tieu-pro",
+  "private": true,
+  "scripts": {
+    "build": "node generate-supabase-config.js"
+  }
+}
