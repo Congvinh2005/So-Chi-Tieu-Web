@@ -17,7 +17,7 @@
   --accent-primary: #6366f1;
   --accent-primary-hover: #4f46e5;
   --accent-secondary: #ec4899;
-  
+
   --color-success: #10b981;
   --color-success-bg: rgba(16, 185, 129, 0.15);
   --color-danger: #ef4444;
@@ -27,8 +27,10 @@
   --color-info: #3b82f6;
   --color-info-bg: rgba(59, 130, 246, 0.15);
 
-  --font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  
+  --font-family:
+    "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -79,7 +81,9 @@
 }
 
 /* Reset & Box Sizing */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -100,11 +104,18 @@ body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
-  transition: background-color var(--transition-normal), color var(--transition-normal);
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
 }
 
 /* Typography Utility */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 700;
   line-height: 1.25;
   color: var(--text-primary);
@@ -116,7 +127,10 @@ a {
   transition: color var(--transition-fast);
 }
 
-button, input, select, textarea {
+button,
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
@@ -130,11 +144,37 @@ button {
 
 /* Layout Main Container */
 .main-content {
+  position: relative;
   flex: 1;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 6rem 1.25rem;
+}
+
+.main-content.guest-mode::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(0.5px);
+  border-radius: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.main-content.guest-mode > * {
+  position: relative;
+  z-index: 2;
+}
+
+.main-content.guest-mode .tab-panel,
+.main-content.guest-mode .dashboard-hero,
+.main-content.guest-mode .metrics-grid,
+.main-content.guest-mode .dashboard-content-grid,
+.main-content.guest-mode .content-card,
+.main-content.guest-mode .tx-list-container {
+  filter: saturate(0.8);
 }
 
 @media (min-width: 768px) {
@@ -169,17 +209,35 @@ button {
   display: none !important;
 }
 
-.text-success { color: var(--color-success) !important; }
-.text-danger { color: var(--color-danger) !important; }
-.text-warning { color: var(--color-warning) !important; }
-.text-info { color: var(--color-info) !important; }
-.text-muted { color: var(--text-muted) !important; }
+.text-success {
+  color: var(--color-success) !important;
+}
+.text-danger {
+  color: var(--color-danger) !important;
+}
+.text-warning {
+  color: var(--color-warning) !important;
+}
+.text-info {
+  color: var(--color-info) !important;
+}
+.text-muted {
+  color: var(--text-muted) !important;
+}
 
-.text-right { text-align: right; }
-.text-center { text-align: center; }
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
 
-.margin-top-md { margin-top: 1rem; }
-.margin-top-lg { margin-top: 1.75rem; }
+.margin-top-md {
+  margin-top: 1rem;
+}
+.margin-top-lg {
+  margin-top: 1.75rem;
+}
 
 .border-danger {
   border-color: rgba(239, 68, 68, 0.4) !important;

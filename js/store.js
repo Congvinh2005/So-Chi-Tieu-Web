@@ -168,11 +168,11 @@ class Store {
   }
 
   resetToGuestState() {
-    this.transactions = [];
+    this.transactions = [...SAMPLE_TRANSACTIONS];
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.transactions));
     } catch (e) {
-      console.error('Error clearing guest state:', e);
+      console.error('Error restoring sample guest state:', e);
     }
     this.notify();
   }

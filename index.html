@@ -618,6 +618,16 @@
       </div>
 
       <form id="authForm" class="modal-body">
+        <div class="auth-notice" style="display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem; padding: 0.9rem 1rem; border-radius: 14px; background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.35); color: #fef3c7; box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);">
+          <div style="flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: rgba(245, 158, 11, 0.18); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: #fbbf24;">
+            <i class="fa-solid fa-circle-info"></i>
+          </div>
+          <div style="font-size: 0.87rem; line-height: 1.55; color: #fef3c7;">
+            <strong style="display: block; margin-bottom: 0.2rem; color: #fff7d6;">Yêu cầu đăng nhập</strong>
+            Vui lòng đăng nhập để sử dụng sổ chi tiêu, lưu dữ liệu cá nhân và quản lý thu chi an toàn.
+          </div>
+        </div>
+
         <div class="form-group hidden" id="authNameGroup">
           <label for="authFullName" class="form-label">Họ và tên</label>
           <input type="text" id="authFullName" class="form-control" placeholder="Nhập họ tên của bạn">
@@ -630,7 +640,12 @@
 
         <div class="form-group">
           <label for="authPassword" class="form-label">Mật khẩu</label>
-          <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required>
+          <div style="position: relative;">
+            <input type="password" id="authPassword" class="form-control" placeholder="••••••••" required style="padding-right: 2.8rem;">
+            <button type="button" class="password-toggle-btn" data-target="authPassword" aria-label="Hiện mật khẩu" style="position: absolute; right: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); background: transparent; border: none; font-size: 1rem; cursor: pointer;">
+              <i class="fa-solid fa-eye"></i>
+            </button>
+          </div>
         </div>
 
         <div class="modal-footer">

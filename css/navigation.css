@@ -134,7 +134,7 @@
 }
 
 .main-content.guest-mode .tab-panel {
-  display: none;
+  display: block;
 }
 
 .guest-state {
@@ -164,7 +164,11 @@
   height: 72px;
   margin: 0 auto 1rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  background: linear-gradient(
+    135deg,
+    var(--accent-primary),
+    var(--accent-secondary)
+  );
   display: flex;
   align-items: center;
   justify-content: center;

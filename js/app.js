@@ -198,11 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setGuestState(isGuest) {
     if (mainContent) {
-      mainContent.classList.toggle('guest-mode', isGuest);
+      mainContent.classList.remove('guest-mode');
     }
 
     if (guestStateView) {
       guestStateView.classList.toggle('hidden', !isGuest);
+    }
+  }
+
+  function setGuestOverlay(isVisible) {
+    if (mainContent) {
+      mainContent.classList.toggle('guest-mode', isVisible);
     }
   }
 
@@ -247,13 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!session) {
       authMode = 'login';
       updateAuthUi();
+      setGuestOverlay(true);
       if (authModal) {
         authModal.classList.remove('hidden');
       }
-      setGuestState(true);
       ui.showToast('Bạn chưa đăng nhập. Vui lòng đăng nhập để tiếp tục.', 'danger');
       return false;
     }
+
+    setGuestOverlay(false);
 
     return true;
   }
@@ -271,13 +279,20 @@ document.addEventListener('DOMContentLoaded', () => {
     closeUserMenu();
 
     if (!session) {
-      store.resetToGuestState();
+      if (store.getTransactions().length === 0) {
+        store.loadSampleData();
+      }
       authMode = 'login';
       updateAuthUi();
-      setGuestState(true);
+      setGuestOverlay(true);
+      if (authModal) {
+        authModal.classList.remove('hidden');
+      }
+      setGuestState(false);
       return;
     }
 
+    setGuestOverlay(false);
     setGuestState(false);
     await store.initFromSupabase();
   }
@@ -893,15 +908,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const session = await supabase.getSession();
             if (session) {
               await supabase.signOut();
-              store.resetToGuestState();
-              updateUserProfileUI(null);
-              setGuestState(true);
-              ui.showToast('Bạn đã đăng xuất.', 'success');
-              renderAll();
-              return;
             }
           }
-          ui.showToast('Bạn chưa đăng nhập.', 'danger');
+
+          store.resetToGuestState();
+          updateUserProfileUI(null);
+          setGuestOverlay(true);
+          setGuestState(false);
+          authMode = 'login';
+          updateAuthUi();
+          if (authModal) {
+            authModal.classList.remove('hidden');
+          }
+          ui.showToast('Bạn đã đăng xuất. Vui lòng đăng nhập lại.', 'success');
+          renderAll();
+          return;
         }
       });
     });
@@ -913,7 +934,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', () => authModal.classList.add('hidden'));
+    if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', () => {
+      authModal.classList.add('hidden');
+      setGuestOverlay(false);
+    });
 
     if (accountModalCloseBtn) accountModalCloseBtn.addEventListener('click', () => accountModal.classList.add('hidden'));
     if (accountModalCancelBtn) accountModalCancelBtn.addEventListener('click', () => accountModal.classList.add('hidden'));
@@ -1004,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
           ui.showToast('Đăng ký thành công! Kiểm tra email để xác nhận.', 'success');
           authModal.classList.add('hidden');
+          setGuestOverlay(false);
           authForm.reset();
           return;
         }
@@ -1016,6 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ui.showToast('Đăng nhập thành công!', 'success');
         authModal.classList.add('hidden');
+        setGuestOverlay(false);
         authForm.reset();
         await syncUserData();
       });
@@ -1030,6 +1056,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const cat = chip.dataset.category;
         const type = chip.dataset.type;
         ui.openTxModal(null, cat, type);
+      });
+    });
+
+    document.querySelectorAll('.password-toggle-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.target;
+        const input = document.getElementById(targetId);
+        if (!input) return;
+
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+
+        const icon = button.querySelector('i');
+        if (icon) {
+          icon.classList.toggle('fa-eye', !isPassword);
+          icon.classList.toggle('fa-eye-slash', isPassword);
+        }
+
+        button.setAttribute('aria-label', isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
       });
     });
 
