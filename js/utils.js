@@ -61,6 +61,55 @@ function formatDateVN(dateStr) {
   return `${parts[2]}/${parts[1]}/${parts[0]}`;
 }
 
+function getTransactionDateValue(tx) {
+  if (!tx) return 0;
+
+  if (tx.created_at) {
+    const time = new Date(tx.created_at).getTime();
+    if (!Number.isNaN(time)) return time;
+  }
+
+  if (tx.datetime) {
+    const time = new Date(tx.datetime).getTime();
+    if (!Number.isNaN(time)) return time;
+  }
+
+  if (tx.date) {
+    const time = new Date(`${tx.date}T00:00:00`).getTime();
+    if (!Number.isNaN(time)) return time;
+  }
+
+  return 0;
+}
+
+function formatDateTimeVN(dateStr, createdAt = '') {
+  if (dateStr) {
+    const date = formatDateVN(dateStr);
+
+    if (createdAt) {
+      try {
+        const parsed = new Date(createdAt);
+        if (!Number.isNaN(parsed.getTime())) {
+          const hh = String(parsed.getHours()).padStart(2, '0');
+          const mm = String(parsed.getMinutes()).padStart(2, '0');
+          return `${date} ${hh}:${mm}`;
+        }
+      } catch (e) {
+        // ignore invalid created_at and fall back to date only
+      }
+    }
+
+    const fallbackTime = new Date(`${dateStr}T00:00:00`);
+    if (!Number.isNaN(fallbackTime.getTime())) {
+      return `${date} 00:00`;
+    }
+
+    return date;
+  }
+
+  return '';
+}
+
 /**
  * Gets category metadata (icon class, color) by category name
  */

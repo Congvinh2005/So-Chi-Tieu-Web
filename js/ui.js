@@ -74,7 +74,7 @@ class UIService {
     subinfo.className = 'tx-subinfo';
 
     const dateSpan = document.createElement('span');
-    dateSpan.textContent = formatDateVN(tx.date);
+    dateSpan.textContent = formatDateTimeVN(tx.date, tx.created_at || tx.datetime || '');
 
     const paymentBadge = document.createElement('span');
     paymentBadge.className = 'tx-badge-payment';

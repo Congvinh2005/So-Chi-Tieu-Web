@@ -70,7 +70,7 @@ class Store {
   }
 
   getTransactions() {
-    return [...this.transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+    return [...this.transactions].sort((a, b) => getTransactionDateValue(b) - getTransactionDateValue(a));
   }
 
   getTransactionById(id) {
