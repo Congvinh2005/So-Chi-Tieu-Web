@@ -158,9 +158,25 @@ class Store {
     this.saveToStorage();
   }
 
-  clearAllData() {
+  async clearAllData() {
+    const supabase = window.appSupabase;
+
+    if (supabase && supabase.isReady()) {
+      const session = await supabase.getSession();
+      if (session) {
+        const { error } = await supabase.clearAllTransactions();
+        if (!error) {
+          this.transactions = [];
+          this.saveToStorage();
+          return true;
+        }
+        return false;
+      }
+    }
+
     this.transactions = [];
     this.saveToStorage();
+    return true;
   }
 
   resetToGuestState() {

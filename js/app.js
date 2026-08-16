@@ -1262,11 +1262,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (clearAllDataBtn) {
-      clearAllDataBtn.addEventListener('click', () => {
-        ui.openConfirmModal('ALL', '⚠️ Bạn có chắc chắn muốn xoá toàn bộ dữ liệu khỏi trình duyệt?', () => {
-          store.clearAllData();
-          ui.showToast('Đã xoá toàn bộ dữ liệu', 'info');
-        });
+      clearAllDataBtn.addEventListener('click', async () => {
+        if (!(await ensureAuthenticated())) return;
+
+        ui.openConfirmModal(
+          'ALL',
+          '⚠️ Bạn có chắc chắn muốn xoá toàn bộ giao dịch của tài khoản hiện tại? Hành động này không thể hoàn tác.',
+          async () => {
+            const success = await store.clearAllData();
+            if (success) {
+              ui.showToast('Đã xoá toàn bộ giao dịch của bạn.', 'success');
+            } else {
+              ui.showToast('Xoá dữ liệu thất bại. Vui lòng thử lại.', 'danger');
+            }
+          }
+        );
       });
     }
   }

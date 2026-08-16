@@ -150,6 +150,18 @@
       if (!this.client) return { data: null, error: new Error('Supabase chưa được cấu hình.') };
       return this.client.from('transactions').delete().eq('id', id);
     }
+
+    async clearAllTransactions() {
+      if (!this.client) return { error: new Error('Supabase chưa được cấu hình.') };
+
+      const { data: sessionData } = await this.client.auth.getSession();
+      const user = sessionData?.session?.user;
+      if (!user) {
+        return { error: new Error('Người dùng chưa đăng nhập.') };
+      }
+
+      return this.client.from('transactions').delete().eq('user_id', user.id);
+    }
   }
 
   window.appSupabase = new SupabaseService();

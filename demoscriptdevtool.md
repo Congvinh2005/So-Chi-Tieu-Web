@@ -1,4 +1,12 @@
-(() => {
+(async () => {
+  const session = await window.appSupabase.getSession();
+  if (!session) {
+    console.log('Chưa đăng nhập, hãy login trước đã.');
+    return;
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+
   const data = [
     { amount: 20000, note: 'food' },
     { amount: 13000, note: 'food' },
@@ -23,17 +31,26 @@
     { amount: 10000, note: 'rau, hành nếu' }
   ];
 
-  const today = new Date().toISOString().slice(0, 10);
-  const items = data.map((x, i) => ({
-    id: (crypto && crypto.randomUUID ? crypto.randomUUID() : `tx_${Date.now()}_${i}`),
-    type: 'expense',
-    amount: Number(x.amount),
-    category: 'Ăn uống',
-    date: today,
-    payment: 'Tiền mặt',
-    note: x.note || ''
-  }));
+  const results = [];
+  for (const item of data) {
+    const payload = {
+      type: 'expense',
+      amount: Number(item.amount),
+      category: 'Ăn uống',
+      date: today,
+      payment: 'Tiền mặt',
+      note: item.note || ''
+    };
 
-  window.appStore.importData(items);
-  console.log('Đã thêm', items.length, 'giao dịch demo');
+    const { data: inserted, error } = await window.appSupabase.addTransaction(payload);
+
+    if (error) {
+      console.error('Lỗi insert:', payload, error);
+    } else {
+      results.push(inserted?.[0] || payload);
+    }
+  }
+
+  console.log('Đã lưu vào Supabase:', results.length, 'dòng');
+  console.log(results);
 })();
