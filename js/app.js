@@ -49,6 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const txAmountInput = document.getElementById('txAmount');
 
   const authActionBtn = document.getElementById('authActionBtn');
+  const userProfileChip = document.getElementById('userProfileChip');
+  const userProfileName = document.getElementById('userProfileName');
+  const userProfileAvatar = document.getElementById('userProfileAvatar');
+  const userProfileMenu = document.getElementById('userProfileMenu');
   const authModal = document.getElementById('authModal');
   const authModalCloseBtn = document.getElementById('authModalCloseBtn');
   const authForm = document.getElementById('authForm');
@@ -123,20 +127,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  function getDisplayUserName(session) {
+    const user = session?.user;
+    const metadata = user?.user_metadata || {};
+    const fullName = metadata.full_name || metadata.name || '';
+
+    if (fullName && fullName.trim()) {
+      return fullName.trim();
+    }
+
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+
+    return 'Người dùng';
+  }
+
+  function updateUserProfileUI(session) {
+    const user = session?.user;
+    const hasSession = Boolean(user);
+
+    if (userProfileChip) {
+      userProfileChip.classList.toggle('hidden', !hasSession);
+    }
+
+    if (userProfileName) {
+      userProfileName.textContent = hasSession ? getDisplayUserName(session) : 'Người dùng';
+    }
+
+    if (userProfileAvatar) {
+      const displayName = getDisplayUserName(session);
+      const initials = displayName
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(part => part[0])
+        .join('')
+        .toUpperCase() || 'U';
+      userProfileAvatar.textContent = initials;
+    }
+
+    if (authActionBtn) {
+      authActionBtn.classList.toggle('hidden', hasSession);
+    }
+  }
+
+  function toggleUserMenu(forceOpen) {
+    if (!userProfileMenu || !userProfileChip) return;
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : userProfileMenu.classList.contains('hidden');
+    userProfileMenu.classList.toggle('hidden', !shouldOpen);
+    userProfileChip.setAttribute('aria-expanded', String(shouldOpen));
+  }
+
+  function closeUserMenu() {
+    toggleUserMenu(false);
+  }
+
   async function syncUserData() {
     const supabase = window.appSupabase;
     if (!supabase || !supabase.isReady()) {
+      updateUserProfileUI(null);
       return;
     }
 
     const session = await supabase.getSession();
-    if (!session) {
-      if (authActionBtn) authActionBtn.textContent = 'Đăng nhập';
-      return;
-    }
+    updateUserProfileUI(session);
+    closeUserMenu();
 
-    if (authActionBtn) {
-      authActionBtn.textContent = 'Đăng xuất';
+    if (!session) {
+      return;
     }
 
     await store.initFromSupabase();
@@ -662,9 +721,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const session = await supabase.getSession();
         if (session) {
-          await supabase.signOut();
-          ui.showToast('Bạn đã đăng xuất.', 'success');
-          authActionBtn.textContent = 'Đăng nhập';
           return;
         }
 
@@ -673,6 +729,51 @@ document.addEventListener('DOMContentLoaded', () => {
         authModal.classList.remove('hidden');
       });
     }
+
+    if (userProfileChip) {
+      userProfileChip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleUserMenu();
+      });
+    }
+
+    document.querySelectorAll('.user-profile-menu-item').forEach(item => {
+      item.addEventListener('click', async () => {
+        const action = item.dataset.action;
+        closeUserMenu();
+
+        if (action === 'account') {
+          ui.showToast('Thông tin tài khoản đang được cập nhật.', 'success');
+          return;
+        }
+
+        if (action === 'settings') {
+          ui.showToast('Mở cài đặt nhanh.', 'success');
+          return;
+        }
+
+        if (action === 'logout') {
+          const supabase = window.appSupabase;
+          if (supabase && supabase.isReady()) {
+            const session = await supabase.getSession();
+            if (session) {
+              await supabase.signOut();
+              updateUserProfileUI(null);
+              ui.showToast('Bạn đã đăng xuất.', 'success');
+              return;
+            }
+          }
+          ui.showToast('Bạn chưa đăng nhập.', 'danger');
+        }
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!userProfileMenu || !userProfileChip) return;
+      if (!userProfileMenu.contains(event.target) && !userProfileChip.contains(event.target)) {
+        closeUserMenu();
+      }
+    });
 
     if (authModalCloseBtn) authModalCloseBtn.addEventListener('click', () => authModal.classList.add('hidden'));
 
@@ -725,6 +826,8 @@ document.addEventListener('DOMContentLoaded', () => {
         await syncUserData();
       });
     }
+
+    updateUserProfileUI(null);
 
     // Preset Chips
     document.querySelectorAll('.preset-chip').forEach(chip => {

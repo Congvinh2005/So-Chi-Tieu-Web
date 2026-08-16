@@ -87,7 +87,29 @@
       </nav>
 
       <div class="header-actions">
-        <button class="btn btn-secondary" id="authActionBtn">Đăng nhập</button>
+        <div class="user-profile-wrapper">
+          <button type="button" class="user-profile-chip hidden" id="userProfileChip" aria-label="Mở menu tài khoản" aria-expanded="false">
+            <div class="user-profile-avatar" id="userProfileAvatar">U</div>
+            <span class="user-profile-name" id="userProfileName">Người dùng</span>
+            <i class="fa-solid fa-chevron-down user-profile-arrow"></i>
+          </button>
+
+          <div class="user-profile-menu hidden" id="userProfileMenu" role="menu" aria-label="Menu tài khoản">
+            <button type="button" class="user-profile-menu-item" data-action="account">
+              <i class="fa-solid fa-user"></i>
+              <span>Thông tin tài khoản</span>
+            </button>
+            <button type="button" class="user-profile-menu-item" data-action="settings">
+              <i class="fa-solid fa-gear"></i>
+              <span>Cài đặt</span>
+            </button>
+            <button type="button" class="user-profile-menu-item danger" data-action="logout">
+              <i class="fa-solid fa-right-from-bracket"></i>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
+        <button class="btn btn-secondary hidden" id="authActionBtn">Đăng nhập</button>
         <button class="btn-theme-toggle" id="themeToggleBtn" aria-label="Chuyển đổi giao diện sáng/tối" title="Đổi giao diện">
           <i class="fa-solid fa-moon icon-dark"></i>
           <i class="fa-solid fa-sun icon-light"></i>
